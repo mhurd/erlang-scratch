@@ -18,35 +18,46 @@
 -export([]).
 
 start_link() ->
-  io:format("Normal exit...~n"),
-  spawn(?MODULE, restarter, []).
+  CurrentPid = global:whereis_name(shop),
+  if
+    CurrentPid =:= undefined ->
+      Pid = spawn(?MODULE, restarter, []),
+      io:format("Restarter Pid = ~p~n", [Pid]),
+      global:whereis_name(shop);
+    CurrentPid =/= undefined ->
+      global:whereis_name(shop)
+  end.
 
 restarter() ->
   process_flag(trap_exit, true),
-  {ok, Pid} =  gen_server:start_link({local, shop}, ?MODULE, [], []),
+  {ok, Pid} =  gen_server:start_link({global, shop}, ?MODULE, [], []),
+  erlang:monitor(process,Pid),
   io:format("Registered ~p to 'shop'...~n", [Pid]),
   receive
-    {'EXIT', Pid, normal} -> % not a crash
-      io:format("Normal exit...~n"),
+    {'DOWN', Ref, process, Pid,  normal} ->
+      io:format("~p said that ~p died by natural causes~n",[Ref,Pid]),
       ok;
-    {'EXIT', Pid, shutdown} -> % manual termination, not a crash
-      io:format("Shutdown exit...~n"),
-      ok;
-    {'EXIT', Pid, _} ->
+    {'DOWN', Ref, process, Pid,  Reason} ->
+      io:format("~p said that ~p died by unnatural causes~n~p",[Ref,Pid,Reason]),
       io:format("Restarting shop...~n"),
       restarter()
   end.
 
+%% This call is synchronous
+ack() ->
+  gen_server:call(global:whereis_name(shop), ack).
+
+%% This call is synchronous
 order_cat(Name, Color, Description) ->
-  gen_server:call(whereis(shop), {order, Name, Color, Description}).
+  gen_server:call(global:whereis_name(shop), {order, Name, Color, Description}).
 
 %% This call is asynchronous
 return_cat(Cat = #cat{}) ->
-  gen_server:cast(whereis(shop), {return, Cat}).
+  gen_server:cast(global:whereis_name(shop), {return, Cat}).
 
 %% This call is synchronous
 close_shop() ->
-  gen_server:call(whereis(shop), terminate).
+  gen_server:call(global:whereis_name(shop), terminate).
 
 %% Server functions
 init([]) -> {ok, []}. %% no treatment of info here!
@@ -58,7 +69,9 @@ handle_call({order, Name, Color, Description}, _From, Cats) ->
        {reply, hd(Cats), tl(Cats)}
   end;
 handle_call(terminate, _From, Cats) ->
-  {stop, normal, ok, Cats}.
+  {stop, normal, ok, Cats};
+handle_call(ack, _From, Cats) ->
+  {reply, ack, Cats}.
 
 handle_cast({return, Cat = #cat{}}, Cats) ->
   {noreply, [Cat| Cats]}.
