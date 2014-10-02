@@ -23,7 +23,7 @@ start_link() ->
     CurrentPid =:= undefined ->
       Pid = spawn(?MODULE, restarter, []),
       io:format("Restarter Pid = ~p~n", [Pid]),
-      global:whereis_name(shop);
+      io:format("Existing shop Pid = ~p~n", [global:whereis_name(shop)]);
     CurrentPid =/= undefined ->
       global:whereis_name(shop)
   end.
@@ -38,7 +38,7 @@ restarter() ->
       io:format("~p said that ~p died by natural causes~n",[Ref,Pid]),
       ok;
     {'DOWN', Ref, process, Pid,  Reason} ->
-      io:format("~p said that ~p died by unnatural causes~n~p",[Ref,Pid,Reason]),
+      io:format("~p said that ~p died by unnatural causes: ~p~n",[Ref,Pid,Reason]),
       io:format("Restarting shop...~n"),
       restarter()
   end.
