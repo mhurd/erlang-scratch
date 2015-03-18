@@ -10,7 +10,7 @@
 -author("mhurd").
 
 %% API
--export([length/1, map/2]).
+-export([length/1, map/2, float/1]).
 
 length(List) -> length(List, 0).
 length([], Acc) -> Acc;
@@ -23,3 +23,6 @@ reverse([H|T], Acc) -> reverse(T, [H|Acc]).
 map(F, List) -> map(F, List, []).
 map(_, [], Acc) -> reverse(Acc);
 map(F, [H|T], Acc) -> map(F, T, [F(H)|Acc]).
+
+float(12.0) -> "Float";
+float(12) -> "Int".
