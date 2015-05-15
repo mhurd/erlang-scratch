@@ -1,6 +1,6 @@
 %%%-------------------------------------------------------------------
 %%% @author mhurd
-%%% @copyright (C) 2015, <COMPANY>
+%%% @copyright (C) 2015
 %%% @doc
 %%%
 %%% @end
@@ -15,18 +15,18 @@ start() ->
   start(8877).
 
 start(Port) ->
-  ok = application:start(crypto), %%<label id="web.app.start"/>
+  ok = application:start(crypto),
   ok = application:start(ranch),
   ok = application:start(cowlib),
-  ok = application:start(cowboy), %%<label id="web.app.end"/>
-  N_acceptors = 10, %%<label id="web.app.acc"/>
+  ok = application:start(cowboy),
+  N_acceptors = 10,
   Dispatch = cowboy_router:compile(
     [
       %% {URIHost, list({URIPath, Handler, Opts})}
-      {'_', [{'_', simple_web_server, []}]}  %%<label id="web.app.disp"/>
+      {'_', [{'_', simple_web_server, []}]}
     ]),
   cowboy:start_http(my_simple_web_server,
-    N_acceptors,       %%<label id="web.app.accu"/>
+    N_acceptors,
     [{port, Port}],
     [{env, [{dispatch, Dispatch}]}]
   ).
@@ -41,10 +41,13 @@ init({tcp, http}, Req, _Opts) ->
   {ok, Req, undefined}.
 
 handle(Req, State) ->
-  {Path, Req1} = cowboy_req:path(Req),                %%<label id="web.handle1"/>
-  Response = read_file(Path),                             %%<label id="web.handle2"/>
-  {ok, Req2} = cowboy_req:reply(200, [], Response, Req1), %%<label id="web.handle3"/>
-  {ok, Req2, State}.  %%<label id="web.handle4"/>
+  {Path, Req1} = cowboy_req:path(Req),
+  Response = case  binary_to_list(Path) of
+    "/" -> read_file(<<"/index.html">>);
+    _ -> read_file(Path)
+  end,
+  {ok, Req2} = cowboy_req:reply(200, [], Response, Req1),
+  {ok, Req2, State}.
 
 terminate(_Reason, _Req, _State) ->
   ok.

@@ -18,6 +18,7 @@
 -spec head(stack()) -> term() | error_empty.
 -spec tail(stack()) -> stack() | empty().
 -spec map(fun((_) -> any()), stack()) -> stack().
+-spec concat(stack(), stack()) -> stack().
 
 -type empty() :: [].
 -type stack() :: list() | empty().
@@ -37,6 +38,10 @@ tail([_|T]) -> T.
 
 map(_, []) -> [];
 map(F, [H|T]) -> cons(F(H), map(F, T)).
+
+concat(S, []) -> S;
+concat([], S) -> S;
+
 
 
 
