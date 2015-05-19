@@ -39,11 +39,11 @@ print_solution({Target, L1, L2}, Solutions, Acc) ->
   Solutions.
 
 n_squared_solve({Target, L1, L2} = Problem) ->
-  {_, {Solutions, Acc}} = lists:mapfoldl(
+  {Solutions, Acc} = lists:foldl(
     fun(I1, L1Acc) ->
-      lists:mapfoldl(
-        fun(I2, {L2Results, L2Acc}) -> {null, {maps:put(get_pair(Target, I1, I2), get_pair(Target, I1, I2), L2Results), L2Acc + 1}} end, L1Acc, L2)
-      end, {maps:new(), 0}, L1),
+      lists:foldl(
+        fun(I2, {L2Results, L2Acc}) -> {maps:put(get_pair(Target, I1, I2), get_pair(Target, I1, I2), L2Results), L2Acc + 1} end, L1Acc, L2)
+    end, {maps:new(), 0}, L1),
   print_solution(Problem, maps:keys(maps:remove({}, Solutions)), Acc).
 
 % uses list comprehensions for brevity - can't thread through an accumilator for counting the iterations though.
