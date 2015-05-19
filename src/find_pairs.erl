@@ -10,7 +10,7 @@
 -author("mhurd").
 
 %% API
--export([gen_problem/2, n_squared_solve/1]).
+-export([gen_problem/2, n_squared_solve/1, n_squared_solve2/1]).
 
 init_random() ->
   {A1,A2,A3} = now(),
@@ -45,3 +45,7 @@ n_squared_solve({Target, L1, L2} = Problem) ->
         fun(I2, {L2Results, L2Acc}) -> {null, {maps:put(get_pair(Target, I1, I2), get_pair(Target, I1, I2), L2Results), L2Acc + 1}} end, L1Acc, L2)
       end, {maps:new(), 0}, L1),
   print_solution(Problem, maps:keys(maps:remove({}, Solutions)), Acc).
+
+% uses list comprehensions for brevity - can't thread through an accumilator for counting the iterations though.
+n_squared_solve2({Target, L1, L2} = Problem) ->
+  print_solution(Problem, lists:usort([{I1, I2} || I1 <- L1, I2 <- L2, I1 + I2 == Target]), length(L1)*length(L2)).
