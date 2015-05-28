@@ -15,38 +15,17 @@
 -export([start/2, step/0, get_neighbours/2]).
 
 init_state(Bounds, OnCoords) ->
-  LiveNeighbourCounts = maps:new(),
   LiveCells = maps:new(),
   LiveCellMap = put_all(OnCoords, LiveCells),
-  {Bounds, LiveNeighbourCounts, LiveCellMap, 0}.
-
-turn_on_cell(Bounds, LiveNeighbourCounts, LiveCellMap, Coord) ->
-  NewLiveCellMap = maps:put(Coord, Coord, LiveCellMap),
-  Neighbours = get_neighbours(Bounds, Coord),
-  NewLiveNeighbourCounts = lists:foldl(fun increment_live_neightbour_count/2, LiveNeighbourCounts, Neighbours),
-  {Bounds, NewLiveNeighbourCounts, NewLiveCellMap}.
-
-turn_off_cell(Bounds, LiveNeighbourCounts, LiveCellMap, Coord) ->
-  NewLiveCellMap = maps:put(Coord, Coord, LiveCellMap),
-  Neighbours = get_neighbours(Bounds, Coord),
-  NewLiveNeighbourCounts = lists:foldl(fun decrement_live_neightbour_count/2, LiveNeighbourCounts, Neighbours),
-  {Bounds, NewLiveNeighbourCounts, NewLiveCellMap}.
-
-modify_live_neightbour_count(F, Coord, LiveNeighbourCounts) ->
-  case maps:find(Coord, LiveNeighbourCounts) of
-    {ok, Value} -> maps:put(Coord, F(Value), LiveNeighbourCounts);
-    error -> maps:put(Coord, 0, LiveNeighbourCounts)
-  end.
-
-increment_live_neightbour_count(Coord, LiveNeighbourCounts) ->
-  modify_live_neightbour_count(fun(V) -> V+1 end, Coord, LiveNeighbourCounts).
-
-decrement_live_neightbour_count(Coord, LiveNeighbourCounts) ->
-  modify_live_neightbour_count(fun(V) -> case V of 0 -> 0; _ -> V-1 end end, Coord, LiveNeighbourCounts).
+  {Bounds, LiveCellMap, 0}.
 
 put_all([], M) -> M;
 put_all([H|T], M) ->
   put_all(T, maps:put(H, H, M)).
+
+remove_all([], M) -> M;
+remove_all([H|T], M) ->
+  put_all(T, maps:remove(H, M)).
 
 start({bounds, _X, _Y} = Bounds, OnCoords) ->
   register(life, spawn(fun() -> State = init_state(Bounds, OnCoords), loop(State) end)).
@@ -90,15 +69,27 @@ get_neighbours({bounds, XB, YB}, {coord, X, Y}) ->
     {coord,roll_around(XB,X-1),roll_around(YB,Y-1)} % north-west
   ].
 
-count_active_neighbours(Bounds, Coord, OnCoords) ->
-  F = fun(E, Acc) -> case maps:find(E, OnCoords) of
+count_active_neighbours(Bounds, Coord, OnCells) ->
+  F = fun(E, Acc) -> case maps:find(E, OnCells) of
                        {ok, Value} -> [Value | Acc];
                        error -> Acc
                      end end,
   length(lists:foldl(F, [], get_neighbours(Bounds, Coord))).
 
-iterate({Bounds,LiveNeighbourCounts,OnCells,Count}) ->
-  {Bounds,LiveNeighbourCounts,OnCells,Count+1}.
+iterate({{bounds, XB, YB} = Bounds,LiveCells,Count}) ->
+  GridCoords = [{coord, X, Y} || X <- lists:seq(1, XB), Y <- lists:seq(1, YB)],
+  F = fun(Coord, {{dead, NewDeadCells}, {live, NewLiveCells}}) ->
+    case count_active_neighbours(Bounds, Coord, LiveCells) of
+      0 -> {{dead, [Coord | NewDeadCells]}, {live, NewLiveCells}};
+      1 -> {{dead, [Coord | NewDeadCells]}, {live, NewLiveCells}};
+      2 -> {{dead, NewDeadCells}, {live, [Coord | NewLiveCells]}};
+      3 -> {{dead, NewDeadCells}, {live, [Coord | NewLiveCells]}};
+      _ -> {{dead, [Coord | NewDeadCells]}, {live, NewLiveCells}}
+    end end,
+  {{dead, DeadCells}, {live, LiveCells}} = lists:foldl(F, {{dead, []}, {live, []}}, GridCoords),
+  RemovedDead = remove_all(DeadCells, LiveCells),
+  AddedLive = put_all(LiveCells, RemovedDead),
+  {Bounds,AddedLive,Count+1}.
 
 %%% Tests
 
@@ -131,8 +122,4 @@ count_active_neighbours_test() ->
     ?assertEqual(2, count_active_neighbours(Bounds, {coord, 3, 2}, TestMap)),
     ?assertEqual(0, count_active_neighbours(Bounds, {coord, 6, 1}, TestMap)),
     ?assertEqual(1, count_active_neighbours(Bounds, {coord, 2, 10}, TestMap))].
-turn_on_cell_test() ->
-  Bounds = {bounds, 10, 10},
-  Result1 = {Bounds, #{{coord, 5, 5} => 0}, #{{coord, 5, 5} => {coord, 5, 5}}},
-  [?assertEqual(Result1, turn_on_cell(Bounds, #{}, #{}, {coord, 5, 5}))].
 -endif.
