@@ -7,47 +7,72 @@
 %%% Created : 20. May 2015 20:15
 %%% Good starting values: life:turn_on_cells([{41,51},{40,53},{41,53},{43,52},{44,53},{45,53},{46,53}]).
 %%% http://lserinol.blogspot.co.uk/2009/01/profiling-performance-of-erlang.html
+%%%
+%%% eprof:start().
+%%% eprof:start_profiling([pid(0,34,0)]).
+%%% eprof:stop_profiling().
+%%% eprof:analyse().
+%%%
 %%% ****** Process <0.60.0>    -- 100.00 % of profiled time ***
-%%% FUNCTION                                      CALLS      %     TIME  [uS / CALLS]
-%%% --------                                      -----    ---     ----  [----------]
-%%% io:o_request/3                                    1   0.00        2  [      2.00]
-%%% io:format/3                                       1   0.00        2  [      2.00]
-%%% net_kernel:dflag_unicode_io/1                     1   0.00        2  [      2.00]
-%%% erlang:group_leader/0                             1   0.00        2  [      2.00]
-%%% io:format/2                                       1   0.00        3  [      3.00]
-%%% io:execute_request/2                              1   0.00        3  [      3.00]
-%%% io:bc_req/3                                       1   0.00        3  [      3.00]
-%%% io:io_request/2                                   1   0.00        4  [      4.00]
-%%% maps:keys/1                                       1   0.00        4  [      4.00]
-%%% erlang:demonitor/2                                1   0.00        4  [      4.00]
-%%% io:request/2                                      1   0.00        5  [      5.00]
-%%% io:default_output/0                               1   0.00        5  [      5.00]
-%%% life:handle_call/3                                1   0.00        5  [      5.00]
-%%% gen_server:loop/6                                 1   0.00        5  [      5.00]
-%%% gen_server:decode_msg/8                           1   0.00        5  [      5.00]
-%%% io:wait_io_mon_reply/2                            1   0.00        6  [      6.00]
-%%% erlang:monitor/2                                  1   0.00       10  [     10.00]
-%%% gen_server:handle_msg/5                           1   0.00       15  [     15.00]
-%%% life:step_forward/2                              11   0.00       36  [      3.27]
-%%% gen_server:reply/2                                1   0.00      224  [    224.00]
-%%% life:'-step_forward/2-lc$^0/1-0-'/2            1010   0.01     1972  [      1.95]
-%%% life:put_all/2                                 1740   0.02     3294  [      1.89]
-%%% lists:seq/2                                    1010   0.02     3795  [      3.76]
-%%% maps:put/3                                     1730   0.04     5773  [      3.34]
-%%% lists:seq_loop/3                              26260   0.34    53463  [      2.04]
-%%% life:remove_all/2                             98280   1.16   180808  [      1.84]
-%%% maps:remove/2                                 98270   2.02   315207  [      3.21]
-%%% life:'-step_forward/2-lc$^1/1-1-'/4          101000   2.34   366125  [      3.63]
-%%% life:is_alive/2                              100000   2.37   369676  [      3.70]
-%%% life:'-step_forward/2-fun-0-'/4              100000   2.37   370179  [      3.70]
-%%% life:count_active_neighbours/3               100000   2.40   374748  [      3.75]
-%%% life:get_neighbours/2                        100000   2.43   379153  [      3.79]
-%%% erlang:setelement/3                          400000   5.05   789262  [      1.97]
-%%% lists:foldl/3                               1000010  13.09  2044002  [      2.04]
-%%% life:'-count_active_neighbours/3-fun-0-'/3   800000  18.85  2943218  [      3.68]
-%%% maps:find/2                                  900000  19.02  2969055  [      3.30]
-%%% life:roll_around/2                          1206000  28.46  4443674  [      3.68]
-%%%-------------------------------------------------------------------
+%%% FUNCTION                                      CALLS      %     TIME [uS / CALLS]
+%%% --------                                      -----    ---     ---- [----------]
+%%% io:o_request/3                                   1   0.00        2  [      2.00]
+%%% io:format/3                                      1   0.00        2  [      2.00]
+%%% gen_server:handle_msg/5                          1   0.00        2  [      2.00]
+%%% net_kernel:dflag_unicode_io/1                    1   0.00        2  [      2.00]
+%%% erlang:group_leader/0                            1   0.00        2  [      2.00]
+%%% io:execute_request/2                             1   0.00        3  [      3.00]
+%%% io:bc_req/3                                      1   0.00        3  [      3.00]
+%%% gen_server:loop/6                                1   0.00        3  [      3.00]
+%%% io:default_output/0                              1   0.00        4  [      4.00]
+%%% io:io_request/2                                  1   0.00        4  [      4.00]
+%%% io:format/2                                      1   0.00        5  [      5.00]
+%%% io:request/2                                     1   0.00        5  [      5.00]
+%%% life:handle_call/3                               1   0.00        6  [      6.00]
+%%% gen_server:decode_msg/8                          1   0.00        6  [      6.00]
+%%% gen_server:reply/2                               1   0.00        7  [      7.00]
+%%% io:wait_io_mon_reply/2                           1   0.00        8  [      8.00]
+%%% erlang:demonitor/2                               1   0.00       12  [     12.00]
+%%% erlang:monitor/2                                 1   0.00       27  [     27.00]
+%%% sets:fold/3                                    100   0.00      190  [      1.90]
+%%% sets:fold_set/3                                100   0.00      222  [      2.22]
+%%% life:step_forward/2                            101   0.00      241  [      2.39]
+%%% sets:new/0                                     100   0.01      403  [      4.03]
+%%% sets:mk_seg/1                                  100   0.01      406  [      4.06]
+%%% sets:to_list/1                                 100   0.01      413  [      4.13]
+%%% maps:keys/1                                    201   0.01      471  [      2.34]
+%%% sets:expand_segs/2                             176   0.01      651  [      3.70]
+%%% sets:fold_segs/4                               507   0.02      963  [      1.90]
+%%% sets:get_bucket_s/2                           3064   0.19    11323  [      3.70]
+%%% sets:maybe_expand_segs/1                      3064   0.19    11471  [      3.74]
+%%% life:put_all/2                                6618   0.20    12380  [      1.87]
+%%% sets:fold_seg/4                               6919   0.22    13568  [      1.96]
+%%% maps:put/3                                    6518   0.29    17782  [      2.73]
+%%% sets:put_bucket_s/3                           6128   0.40    24025  [      3.92]
+%%% life:'-step_forward/2-fun-0-'/3               6449   0.40    24364  [      3.78]
+%%% life:remove_all/2                            16301   0.51    30958  [      1.90]
+%%% maps:remove/2                                16201   0.66    40108  [      2.48]
+%%% sets:fold_bucket/3                           29231   1.08    65531  [      2.24]
+%%% sets:'-to_list/1-fun-0-'/2                   22719   1.38    83326  [      3.67]
+%%% life:'-step_forward/2-fun-1-'/4              22719   1.40    84652  [      3.73]
+%%% life:is_alive/2                              22719   1.42    86033  [      3.79]
+%%% life:count_active_neighbours/3               22719   1.42    86294  [      3.80]
+%%% sets:rehash/4                                24944   1.51    91528  [      3.67]
+%%% life:get_neighbours/2                        29168   1.83   111118  [      3.81]
+%%% sets:maybe_expand/2                          58041   1.87   113255  [      1.95]
+%%% life:add_all_to_set/2                        64590   2.01   121583  [      1.88]
+%%% erlang:phash/2                               79921   2.65   160365  [      2.01]
+%%% sets:add_element/2                           58041   3.54   214643  [      3.70]
+%%% sets:'-add_element/2-fun-0-'/2               58041   3.55   214922  [      3.70]
+%%% sets:get_slot/2                              58041   3.61   218427  [      3.76]
+%%% sets:on_bucket/3                             58041   3.64   220748  [      3.80]
+%%% sets:add_bkt_el/3                           178417   5.50   333051  [      1.87]
+%%% lists:foldl/3                               233839   7.89   477803  [      2.04]
+%%% maps:find/2                                 204471   8.36   506634  [      2.48]
+%%% life:'-count_active_neighbours/3-fun-0-'/3  181752  11.05   669153  [      3.68]
+%%% erlang:setelement/3                         358204  11.46   693951  [      1.94]
+%%% life:roll_around/2                          350016  21.70  1314710  [      3.76]
+%%% -------------------------------------------------------------------
 -module(life).
 -author("mhurd").
 
@@ -62,7 +87,7 @@
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
 
 %% API
--export([start_link/2, start_link/1, start_link/0, turn_on_cells/1, step/0, step/1, reset/1]).
+-export([start_link/2, start_link/1, start_link/0, turn_on_cells/1, step/0, step/1, reset_to_bounds/1, get_state/0]).
 
 %% API implementation methods
 
@@ -83,12 +108,16 @@ step() ->
 step(N) ->
   gen_server:call(?SERVER, {step, N}, infinity).
 
-reset(Bounds) ->
-  gen_server:call(?SERVER, {reset, Bounds}).
+get_state() ->
+  gen_server:call(?SERVER, get_state).
+
+reset_to_bounds(Bounds) ->
+  gen_server:call(?SERVER, {reset_to_bounds, Bounds}).
 
 %% gen_server callback implementations
 
 init([Bounds, LiveCells]) ->
+  io:format("life PID: ~p~n", [self()]),
   {ok, init_state(Bounds, LiveCells)}.
 
 handle_call({turn_on_cells, NewLiveCells}, _From, #state{live_cells=LiveCellMap} = State) ->
@@ -100,7 +129,10 @@ handle_call(step, _From, State) ->
 handle_call({step, N}, _From, State) ->
   Reply = ok,
   {reply, Reply, step_forward(State, N)};
-handle_call({reset, Bounds}, _From, _State) ->
+handle_call(get_state, _From, State) ->
+  Reply = State,
+  {reply, Reply, State};
+handle_call({reset_to_bounds, Bounds}, _From, _State) ->
   Reply = ok,
   {reply, Reply, init_state(Bounds, [])}.
 
@@ -163,13 +195,23 @@ is_alive(Coord, LiveCellMap) ->
     error -> false
   end.
 
+add_all_to_set([], S) -> S;
+add_all_to_set([H|T], S) -> add_all_to_set(T, sets:add_element(H, S)).
+
 step_forward(#state{bounds=#bounds{x=XBounds, y=YBounds}, live_cells=LiveCells} = State, 0) ->
   io:format("~p/~p cells are alive~n", [length(maps:keys(LiveCells)), XBounds*YBounds]),
   State;
-step_forward(#state{bounds=#bounds{x=XBounds, y=YBounds} = Bounds,live_cells=LiveCells,age=Age}, N) ->
-  GridCoords = [#coord{x=X, y=Y} || X <- lists:seq(1, XBounds), Y <- lists:seq(1, YBounds)],
+step_forward(#state{bounds=Bounds,live_cells=LiveCells,age=Age}, N) ->
+  NeighboursSet = lists:foldl(
+    fun(LC, Acc) -> add_all_to_set(get_neighbours(Bounds, LC), Acc) end, sets:new(), maps:keys(LiveCells)),
+  TotalCellsSet = add_all_to_set(maps:keys(LiveCells), NeighboursSet),
+  GridCoords = sets:to_list(TotalCellsSet),
+  %io:format("Age: ~p~n", [Age]),
+  %io:format("Live Cells: ~p~n", [LiveCells]),
+  %io:format("Neighbours: ~p~n", [GridCoords]),
   F = fun(Coord, {{dead, NewDeadCells}, {live, NewLiveCells}}) ->
     ActiveNeighbourCount = count_active_neighbours(Bounds, Coord, LiveCells),
+    %io:format("~p has ~p active neighbours~n", [Coord, ActiveNeighbourCount]),
     case is_alive(Coord, LiveCells) of
       true -> case ActiveNeighbourCount of
                 0 -> {{dead, [Coord | NewDeadCells]}, {live, NewLiveCells}};
