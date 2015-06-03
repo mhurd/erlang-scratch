@@ -11,3 +11,4 @@
 -record(coord, {x, y}).
 -record(bounds, {x, y}).
 -record(state, {bounds=#bounds{}, live_cells, age=0}).
+-record(changed_cells, {dead_cells = [], live_cells = []}).

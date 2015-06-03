@@ -8,70 +8,80 @@
 %%% Good starting values: life:turn_on_cells([{41,51},{40,53},{41,53},{43,52},{44,53},{45,53},{46,53}]).
 %%% http://lserinol.blogspot.co.uk/2009/01/profiling-performance-of-erlang.html
 %%%
+%%% application:start(life).
+%%% life:turn_on_cells([{41,51},{40,53},{41,53},{43,52},{44,53},{45,53},{46,53}]).
 %%% eprof:start().
 %%% eprof:start_profiling([pid(0,34,0)]).
+%%% life:step(100).
 %%% eprof:stop_profiling().
-%%% eprof:analyse().
+%%% eprof:analyze().
 %%%
 %%% ****** Process <0.60.0>    -- 100.00 % of profiled time ***
-%%% FUNCTION                                      CALLS      %     TIME [uS / CALLS]
-%%% --------                                      -----    ---     ---- [----------]
-%%% io:o_request/3                                   1   0.00        2  [      2.00]
-%%% io:format/3                                      1   0.00        2  [      2.00]
-%%% gen_server:handle_msg/5                          1   0.00        2  [      2.00]
-%%% net_kernel:dflag_unicode_io/1                    1   0.00        2  [      2.00]
-%%% erlang:group_leader/0                            1   0.00        2  [      2.00]
-%%% io:execute_request/2                             1   0.00        3  [      3.00]
-%%% io:bc_req/3                                      1   0.00        3  [      3.00]
-%%% gen_server:loop/6                                1   0.00        3  [      3.00]
-%%% io:default_output/0                              1   0.00        4  [      4.00]
-%%% io:io_request/2                                  1   0.00        4  [      4.00]
-%%% io:format/2                                      1   0.00        5  [      5.00]
-%%% io:request/2                                     1   0.00        5  [      5.00]
-%%% life:handle_call/3                               1   0.00        6  [      6.00]
-%%% gen_server:decode_msg/8                          1   0.00        6  [      6.00]
-%%% gen_server:reply/2                               1   0.00        7  [      7.00]
-%%% io:wait_io_mon_reply/2                           1   0.00        8  [      8.00]
-%%% erlang:demonitor/2                               1   0.00       12  [     12.00]
-%%% erlang:monitor/2                                 1   0.00       27  [     27.00]
-%%% sets:fold/3                                    100   0.00      190  [      1.90]
-%%% sets:fold_set/3                                100   0.00      222  [      2.22]
-%%% life:step_forward/2                            101   0.00      241  [      2.39]
-%%% sets:new/0                                     100   0.01      403  [      4.03]
-%%% sets:mk_seg/1                                  100   0.01      406  [      4.06]
-%%% sets:to_list/1                                 100   0.01      413  [      4.13]
-%%% maps:keys/1                                    201   0.01      471  [      2.34]
-%%% sets:expand_segs/2                             176   0.01      651  [      3.70]
-%%% sets:fold_segs/4                               507   0.02      963  [      1.90]
-%%% sets:get_bucket_s/2                           3064   0.19    11323  [      3.70]
-%%% sets:maybe_expand_segs/1                      3064   0.19    11471  [      3.74]
-%%% life:put_all/2                                6618   0.20    12380  [      1.87]
-%%% sets:fold_seg/4                               6919   0.22    13568  [      1.96]
-%%% maps:put/3                                    6518   0.29    17782  [      2.73]
-%%% sets:put_bucket_s/3                           6128   0.40    24025  [      3.92]
-%%% life:'-step_forward/2-fun-0-'/3               6449   0.40    24364  [      3.78]
-%%% life:remove_all/2                            16301   0.51    30958  [      1.90]
-%%% maps:remove/2                                16201   0.66    40108  [      2.48]
-%%% sets:fold_bucket/3                           29231   1.08    65531  [      2.24]
-%%% sets:'-to_list/1-fun-0-'/2                   22719   1.38    83326  [      3.67]
-%%% life:'-step_forward/2-fun-1-'/4              22719   1.40    84652  [      3.73]
-%%% life:is_alive/2                              22719   1.42    86033  [      3.79]
-%%% life:count_active_neighbours/3               22719   1.42    86294  [      3.80]
-%%% sets:rehash/4                                24944   1.51    91528  [      3.67]
-%%% life:get_neighbours/2                        29168   1.83   111118  [      3.81]
-%%% sets:maybe_expand/2                          58041   1.87   113255  [      1.95]
-%%% life:add_all_to_set/2                        64590   2.01   121583  [      1.88]
-%%% erlang:phash/2                               79921   2.65   160365  [      2.01]
-%%% sets:add_element/2                           58041   3.54   214643  [      3.70]
-%%% sets:'-add_element/2-fun-0-'/2               58041   3.55   214922  [      3.70]
-%%% sets:get_slot/2                              58041   3.61   218427  [      3.76]
-%%% sets:on_bucket/3                             58041   3.64   220748  [      3.80]
-%%% sets:add_bkt_el/3                           178417   5.50   333051  [      1.87]
-%%% lists:foldl/3                               233839   7.89   477803  [      2.04]
-%%% maps:find/2                                 204471   8.36   506634  [      2.48]
-%%% life:'-count_active_neighbours/3-fun-0-'/3  181752  11.05   669153  [      3.68]
-%%% erlang:setelement/3                         358204  11.46   693951  [      1.94]
-%%% life:roll_around/2                          350016  21.70  1314710  [      3.76]
+%%% FUNCTION                                      CALLS      %     TIME  [uS / CALLS]
+%%% --------                                      -----    ---     ----  [----------]
+%%% io:format/3                                       1   0.00        2  [      2.00]
+%%% erlang:group_leader/0                             1   0.00        2  [      2.00]
+%%% io:o_request/3                                    1   0.00        3  [      3.00]
+%%% io:execute_request/2                              1   0.00        3  [      3.00]
+%%% io:bc_req/3                                       1   0.00        3  [      3.00]
+%%% io:io_request/2                                   1   0.00        3  [      3.00]
+%%% gen_server:loop/6                                 1   0.00        3  [      3.00]
+%%% gen_server:handle_msg/5                           1   0.00        3  [      3.00]
+%%% net_kernel:dflag_unicode_io/1                     1   0.00        3  [      3.00]                                                                                       [28/350]
+%%% io:format/2                                       1   0.00        4  [      4.00]
+%%% io:request/2                                      1   0.00        5  [      5.00]
+%%% io:default_output/0                               1   0.00        5  [      5.00]
+%%% gen_server:decode_msg/8                           1   0.00        5  [      5.00]
+%%% life:handle_call/3                                1   0.00        6  [      6.00]
+%%% erlang:demonitor/2                                1   0.00        6  [      6.00]
+%%% gen_server:reply/2                                1   0.00        7  [      7.00]
+%%% io:wait_io_mon_reply/2                            1   0.00       10  [     10.00]
+%%% erlang:monitor/2                                  1   0.00       55  [     55.00]
+%%% sets:fold/3                                     100   0.00      206  [      2.06]
+%%% life:step_forward/2                             101   0.00      240  [      2.38]
+%%% sets:fold_set/3                                 100   0.00      262  [      2.62]
+%%% sets:mk_seg/1                                   100   0.01      416  [      4.16]
+%%% sets:to_list/1                                  100   0.01      434  [      4.34]
+%%% life:evaluate_cells/3                           100   0.01      439  [      4.39]
+%%% life:evaluate_cell_fun/2                        100   0.01      440  [      4.40]
+%%% sets:new/0                                      100   0.01      462  [      4.62]
+%%% maps:keys/1                                     201   0.01      577  [      2.87]
+%%% life:get_live_cell_neighbours/2                 100   0.01      610  [      6.10]
+%%% sets:expand_segs/2                              176   0.01      735  [      4.18]
+%%% sets:fold_segs/4                                507   0.01     1071  [      2.11]
+%%% life:death/2                                   2556   0.07     5531  [      2.16]
+%%% life:remove_all/2                              2656   0.07     5648  [      2.13]
+%%% maps:remove/2                                  2556   0.09     7125  [      2.79]
+%%% sets:get_bucket_s/2                            3064   0.16    12660  [      4.13]
+%%% sets:maybe_expand_segs/1                       3064   0.16    12969  [      4.23]
+%%% life:put_all/2                                 6618   0.18    14212  [      2.15]
+%%% life:life/2                                    6518   0.18    14286  [      2.19]
+%%% sets:fold_seg/4                                6919   0.20    15878  [      2.29]
+%%% maps:put/3                                     6518   0.26    20602  [      3.16]
+%%% life:'-get_live_cell_neighbours/2-fun-0-'/3    6449   0.33    26291  [      4.08]
+%%% sets:put_bucket_s/3                            6128   0.33    26390  [      4.31]
+%%% life:conway_rule/4                            22719   0.62    48515  [      2.14]
+%%% sets:fold_bucket/3                            29231   0.91    71680  [      2.45]
+%%% sets:'-to_list/1-fun-0-'/2                    22719   1.14    89807  [      3.95]
+%%% life:is_alive/2                               22719   1.18    93264  [      4.11]
+%%% life:'-evaluate_cell_fun/2-fun-0-'/4          22719   1.19    93576  [      4.12]
+%%% life:count_active_neighbours/3                22719   1.21    95069  [      4.18]
+%%% sets:rehash/4                                 24944   1.28   101021  [      4.05]
+%%% life:get_coord_neighbours/2                   29168   1.53   120270  [      4.12]
+%%% sets:maybe_expand/2                           58041   1.58   124436  [      2.14]
+%%% life:add_all_to_set/2                         64590   1.65   130212  [      2.02]
+%%% erlang:phash/2                                79921   2.37   186584  [      2.33]
+%%% sets:add_element/2                            58041   2.98   235030  [      4.05]
+%%% sets:'-add_element/2-fun-0-'/2                58041   3.00   236120  [      4.07]
+%%% sets:get_slot/2                               58041   3.05   240706  [      4.15]
+%%% sets:on_bucket/3                              58041   3.09   243362  [      4.19]
+%%% sets:add_bkt_el/3                            178417   4.63   365043  [      2.05]
+%%% lists:foldl/3                                233839   6.76   533046  [      2.28]
+%%% erlang:setelement/3                          250606   6.90   543958  [      2.17]
+%%% maps:find/2                                  204471   7.36   579885  [      2.84]
+%%% life:'-count_active_neighbours/3-fun-0-'/3   181752   9.32   734526  [      4.04]
+%%% life:add_coords/3                            233344  12.11   954950  [      4.09]
+%%% life:roll_around/2                           466688  24.03  1894359  [      4.06]
 %%% -------------------------------------------------------------------
 -module(life).
 -author("mhurd").
@@ -82,6 +92,15 @@
 -behaviour(gen_server).
 
 -define(SERVER, ?MODULE).
+% assuming 0,0 is top left of the coordinate system
+-define(NORTH, #coord{x=0,y=-1}).
+-define(NORTH_EAST, #coord{x=1,y=-1}).
+-define(EAST, #coord{x=1,y=0}).
+-define(SOUTH_EAST, #coord{x=1,y=1}).
+-define(SOUTH, #coord{x=0,y=1}).
+-define(SOUTH_WEST, #coord{x=-1,y=1}).
+-define(WEST, #coord{x=-1,y=0}).
+-define(NORTH_WEST, #coord{x=-1,y=-1}).
 
 %% gen_server callback API
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
@@ -165,21 +184,24 @@ remove_all([H|T], M) ->
 tuples_to_coords(L) ->
   lists:map(fun({X, Y}) -> #coord{x=X,y=Y} end, L).
 
+% assumes that we never get more than +/-1 from [1..Bound]
 roll_around(Bound, 0) -> Bound;
-roll_around(Bound, Val) when Val < 0 -> roll_around(Bound, Bound+Val);
-roll_around(Bound, Val) when Val > Bound -> roll_around(Bound, Val rem Bound);
-roll_around(Bound, Val) when (Val > 0) and (Val =< Bound) -> Val.
+roll_around(Bound, Bound) -> Bound;
+roll_around(Bound, Val) -> Val rem Bound.
 
-get_neighbours(#bounds{x=XB, y=YB}, #coord{x=X, y=Y} = Coord) ->
+add_coords(#bounds{x=XB, y=YB}, #coord{x=X1, y=Y1}, #coord{x=X2, y=Y2}) ->
+  #coord{x=roll_around(XB, X1+X2), y=roll_around(YB, Y1+Y2)}.
+
+get_coord_neighbours(Bounds, Coord) ->
   [
-    Coord#coord{y=roll_around(YB,Y-1)}, % north
-    Coord#coord{x=roll_around(XB,X+1),y=roll_around(YB,Y-1)}, % north-east
-    Coord#coord{x=roll_around(XB,X+1)}, % east
-    Coord#coord{x=roll_around(XB,X+1),y=roll_around(YB,Y+1)}, % south-east
-    Coord#coord{y=roll_around(YB,Y+1)}, % south
-    Coord#coord{x=roll_around(XB,X-1),y=roll_around(YB,Y+1)}, % south-west
-    Coord#coord{x=roll_around(XB,X-1)}, % west
-    Coord#coord{x=roll_around(XB,X-1),y=roll_around(YB,Y-1)} % north-west
+    add_coords(Bounds,Coord, ?NORTH),
+    add_coords(Bounds,Coord, ?NORTH_EAST),
+    add_coords(Bounds,Coord, ?EAST),
+    add_coords(Bounds,Coord, ?SOUTH_EAST),
+    add_coords(Bounds,Coord, ?SOUTH),
+    add_coords(Bounds,Coord, ?SOUTH_WEST),
+    add_coords(Bounds,Coord, ?WEST),
+    add_coords(Bounds,Coord, ?NORTH_WEST)
   ].
 
 count_active_neighbours(Bounds, Coord, LiveCellMap) ->
@@ -187,7 +209,7 @@ count_active_neighbours(Bounds, Coord, LiveCellMap) ->
                        {ok, Value} -> [Value | Acc];
                        error -> Acc
                      end end,
-  length(lists:foldl(F, [], get_neighbours(Bounds, Coord))).
+  length(lists:foldl(F, [], get_coord_neighbours(Bounds, Coord))).
 
 is_alive(Coord, LiveCellMap) ->
   case maps:find(Coord, LiveCellMap) of
@@ -198,39 +220,63 @@ is_alive(Coord, LiveCellMap) ->
 add_all_to_set([], S) -> S;
 add_all_to_set([H|T], S) -> add_all_to_set(T, sets:add_element(H, S)).
 
+death(Coord, #changed_cells{dead_cells=DeadCellList} = ChangedCells) ->
+  ChangedCells#changed_cells{dead_cells = [Coord | DeadCellList]}.
+life(Coord, #changed_cells{live_cells = LiveCellList} = ChangedCells) ->
+  ChangedCells#changed_cells{live_cells = [Coord | LiveCellList]}.
+
+conway_rule(alive, Coord, ChangedCells, 0) ->
+  death(Coord, ChangedCells); % no neighbours - die!
+conway_rule(alive, Coord, ChangedCells, 1) ->
+  death(Coord, ChangedCells); % lonely - die!
+conway_rule(alive, Coord, ChangedCells, 2) ->
+  life(Coord, ChangedCells); % ok - stay alive
+conway_rule(alive, Coord, ChangedCells, 3) ->
+  life(Coord, ChangedCells); % ok - stay alive
+conway_rule(alive, Coord, ChangedCells, _) ->
+  death(Coord, ChangedCells); % over-crowded - die!
+conway_rule(dead, Coord, ChangedCells, 3) ->
+  life(Coord, ChangedCells); % birth!
+conway_rule(dead, _Coord, ChangedCells, _) ->
+  ChangedCells. % stay dead
+
+evaluate_cell_fun(Bounds, LiveCells) -> fun(Coord, ChangedCells) ->
+  ActiveNeighbourCount = count_active_neighbours(Bounds, Coord, LiveCells),
+  %io:format("~p has ~p active neighbours~n", [Coord, ActiveNeighbourCount]),
+  case is_alive(Coord, LiveCells) of
+    true -> conway_rule(alive, Coord, ChangedCells, ActiveNeighbourCount);
+    false -> conway_rule(dead, Coord, ChangedCells, ActiveNeighbourCount)
+  end end.
+
+evaluate_cells(Bounds, CurrentLiveCells, CoordsToEvaluate) ->
+  lists:foldl(evaluate_cell_fun(Bounds, CurrentLiveCells), #changed_cells{}, CoordsToEvaluate).
+
+get_live_cell_neighbours(Bounds, CurrentLiveCells) ->
+  lists:foldl(fun(LC, Acc) -> add_all_to_set(get_coord_neighbours(Bounds, LC), Acc) end, sets:new(), maps:keys(CurrentLiveCells)).
+
 step_forward(#state{bounds=#bounds{x=XBounds, y=YBounds}, live_cells=LiveCells} = State, 0) ->
   io:format("~p/~p cells are alive~n", [length(maps:keys(LiveCells)), XBounds*YBounds]),
   State;
-step_forward(#state{bounds=Bounds,live_cells=LiveCells,age=Age}, N) ->
-  NeighboursSet = lists:foldl(
-    fun(LC, Acc) -> add_all_to_set(get_neighbours(Bounds, LC), Acc) end, sets:new(), maps:keys(LiveCells)),
-  TotalCellsSet = add_all_to_set(maps:keys(LiveCells), NeighboursSet),
-  GridCoords = sets:to_list(TotalCellsSet),
+step_forward(#state{bounds=Bounds,live_cells=CurrentLiveCells,age=Age}, N) ->
+  NeighbouringCells = get_live_cell_neighbours(Bounds, CurrentLiveCells),
+  LiveAndNeighbouringCells = add_all_to_set(maps:keys(CurrentLiveCells), NeighbouringCells),
+  CellsToEvaluate = sets:to_list(LiveAndNeighbouringCells),
   %io:format("Age: ~p~n", [Age]),
   %io:format("Live Cells: ~p~n", [LiveCells]),
   %io:format("Neighbours: ~p~n", [GridCoords]),
-  F = fun(Coord, {{dead, NewDeadCells}, {live, NewLiveCells}}) ->
-    ActiveNeighbourCount = count_active_neighbours(Bounds, Coord, LiveCells),
-    %io:format("~p has ~p active neighbours~n", [Coord, ActiveNeighbourCount]),
-    case is_alive(Coord, LiveCells) of
-      true -> case ActiveNeighbourCount of
-                0 -> {{dead, [Coord | NewDeadCells]}, {live, NewLiveCells}};
-                1 -> {{dead, [Coord | NewDeadCells]}, {live, NewLiveCells}};
-                2 -> {{dead, NewDeadCells}, {live, [Coord | NewLiveCells]}};
-                3 -> {{dead, NewDeadCells}, {live, [Coord | NewLiveCells]}};
-                _ -> {{dead, [Coord | NewDeadCells]}, {live, NewLiveCells}}
-              end;
-      false -> case ActiveNeighbourCount of
-                 3 -> {{dead, NewDeadCells}, {live, [Coord | NewLiveCells]}};
-                 _ -> {{dead, [Coord | NewDeadCells]}, {live, NewLiveCells}}
-               end
-     end end,
-  {{dead, DCells}, {live, LCells}} = lists:foldl(F, {{dead, []}, {live, []}}, GridCoords),
-  RemovedDead = remove_all(DCells, LiveCells),
-  AddedLive = put_all(LCells, RemovedDead),
+  #changed_cells{dead_cells = DeadCellList, live_cells = LiveCellList} =
+    evaluate_cells(Bounds, CurrentLiveCells, CellsToEvaluate),
+  RemovedDead = remove_all(DeadCellList, CurrentLiveCells),
+  AddedLive = put_all(LiveCellList, RemovedDead),
   step_forward(#state{bounds=Bounds,live_cells=AddedLive,age=Age+1}, N-1).
 
-%%% Tests
+%%%-------------------------------------------------------------------
+%%%  ******* **** ***** ******* *****
+%%%     *    *    *        *    *
+%%%     *    ***  *****    *    *****
+%%%     *    *        *    *        *
+%%%     *    **** *****    *    *****
+%%%-------------------------------------------------------------------
 
 -ifdef(EUNIT).
 roll_around_test() ->
@@ -242,11 +288,11 @@ roll_around_test() ->
     ?assertEqual(7, roll_around(10, -303))].
 get_neighbours_test() ->
   [?assertEqual([#coord{x=10,y=9},#coord{x=1,y=9},#coord{x=1,y=10},#coord{x=1,y=1},#coord{x=10,y=1},#coord{x=9,y=1},#coord{x=9,y=10},#coord{x=9,y=9}],
-    get_neighbours(#bounds{x=10,y=10}, #coord{x=10,y=10})),
+    get_coord_neighbours(#bounds{x=10,y=10}, #coord{x=10,y=10})),
     ?assertEqual([#coord{x=5,y=4},#coord{x=6,y=4},#coord{x=6,y=5},#coord{x=6,y=6},#coord{x=5,y=6},#coord{x=4,y=6},#coord{x=4,y=5},#coord{x=4,y=4}],
-      get_neighbours(#bounds{x=10,y=10}, #coord{x=5,y=5})),
+      get_coord_neighbours(#bounds{x=10,y=10}, #coord{x=5,y=5})),
     ?assertEqual([#coord{x=1,y=10},#coord{x=2,y=10},#coord{x=2,y=1},#coord{x=2,y=2},#coord{x=1,y=2},#coord{x=10,y=2},#coord{x=10,y=1},#coord{x=10,y=10}],
-      get_neighbours(#bounds{x=10,y=10}, #coord{x=1,y=1}))].
+      get_coord_neighbours(#bounds{x=10,y=10}, #coord{x=1,y=1}))].
 count_active_neighbours_test() ->
   Bounds = #bounds{x=10, y=10},
   TestMap = #{#coord{x=5,y=4} =>1,
