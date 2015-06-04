@@ -16,6 +16,11 @@
 %%% eprof:stop_profiling().
 %%% eprof:analyze().
 %%%
+%%% Smaller grid:
+%%% life:reset_to_bounds({10,10}).
+%%% life:turn_on_cells([{3,4},{2,6},{3,6},{5,5},{6,6},{7,6},{8,6}]).
+%%%
+%%%
 %%% ****** Process <0.60.0>    -- 100.00 % of profiled time ***
 %%% FUNCTION                                      CALLS      %     TIME  [uS / CALLS]
 %%% --------                                      -----    ---     ----  [----------]
@@ -189,19 +194,19 @@ roll_around(Bound, 0) -> Bound;
 roll_around(Bound, Bound) -> Bound;
 roll_around(Bound, Val) -> Val rem Bound.
 
-add_coords(#bounds{x=XB, y=YB}, #coord{x=X1, y=Y1}, #coord{x=X2, y=Y2}) ->
+add_coords(#bounds{x=XB,y=YB}, #coord{x=X1, y=Y1}, #coord{x=X2, y=Y2}) ->
   #coord{x=roll_around(XB, X1+X2), y=roll_around(YB, Y1+Y2)}.
 
 get_coord_neighbours(Bounds, Coord) ->
   [
-    add_coords(Bounds,Coord, ?NORTH),
-    add_coords(Bounds,Coord, ?NORTH_EAST),
-    add_coords(Bounds,Coord, ?EAST),
-    add_coords(Bounds,Coord, ?SOUTH_EAST),
-    add_coords(Bounds,Coord, ?SOUTH),
-    add_coords(Bounds,Coord, ?SOUTH_WEST),
-    add_coords(Bounds,Coord, ?WEST),
-    add_coords(Bounds,Coord, ?NORTH_WEST)
+    add_coords(Bounds, Coord, ?NORTH),
+    add_coords(Bounds, Coord, ?NORTH_EAST),
+    add_coords(Bounds, Coord, ?EAST),
+    add_coords(Bounds, Coord, ?SOUTH_EAST),
+    add_coords(Bounds, Coord, ?SOUTH),
+    add_coords(Bounds, Coord, ?SOUTH_WEST),
+    add_coords(Bounds, Coord, ?WEST),
+    add_coords(Bounds, Coord, ?NORTH_WEST)
   ].
 
 count_active_neighbours(Bounds, Coord, LiveCellMap) ->
@@ -225,17 +230,17 @@ death(Coord, #changed_cells{dead_cells=DeadCellList} = ChangedCells) ->
 life(Coord, #changed_cells{live_cells = LiveCellList} = ChangedCells) ->
   ChangedCells#changed_cells{live_cells = [Coord | LiveCellList]}.
 
-conway_rule(alive, Coord, ChangedCells, 0) ->
+conway_rule(alive, Coord, ChangedCells, _LiveNeighbours = 0) ->
   death(Coord, ChangedCells); % no neighbours - die!
-conway_rule(alive, Coord, ChangedCells, 1) ->
+conway_rule(alive, Coord, ChangedCells, _LiveNeighbours = 1) ->
   death(Coord, ChangedCells); % lonely - die!
-conway_rule(alive, Coord, ChangedCells, 2) ->
+conway_rule(alive, Coord, ChangedCells, _LiveNeighbours = 2) ->
   life(Coord, ChangedCells); % ok - stay alive
-conway_rule(alive, Coord, ChangedCells, 3) ->
+conway_rule(alive, Coord, ChangedCells, _LiveNeighbours = 3) ->
   life(Coord, ChangedCells); % ok - stay alive
 conway_rule(alive, Coord, ChangedCells, _) ->
   death(Coord, ChangedCells); % over-crowded - die!
-conway_rule(dead, Coord, ChangedCells, 3) ->
+conway_rule(dead, Coord, ChangedCells, _LiveNeighbours = 3) ->
   life(Coord, ChangedCells); % birth!
 conway_rule(dead, _Coord, ChangedCells, _) ->
   ChangedCells. % stay dead
@@ -281,11 +286,11 @@ step_forward(#state{bounds=Bounds,live_cells=CurrentLiveCells,age=Age}, N) ->
 -ifdef(EUNIT).
 roll_around_test() ->
   [?assertEqual(1, roll_around(10, 11)),
-    ?assertEqual(4, roll_around(10, 14)),
+    ?assertEqual(5, roll_around(10, 5)),
     ?assertEqual(10, roll_around(10, 0)),
-    ?assertEqual(7, roll_around(10, -3)),
-    ?assertEqual(4, roll_around(10, 34)),
-    ?assertEqual(7, roll_around(10, -303))].
+    ?assertEqual(10, roll_around(10, 10)),
+    ?assertEqual(1, roll_around(10, 1)),
+    ?assertEqual(9, roll_around(10, 9))].
 get_neighbours_test() ->
   [?assertEqual([#coord{x=10,y=9},#coord{x=1,y=9},#coord{x=1,y=10},#coord{x=1,y=1},#coord{x=10,y=1},#coord{x=9,y=1},#coord{x=9,y=10},#coord{x=9,y=9}],
     get_coord_neighbours(#bounds{x=10,y=10}, #coord{x=10,y=10})),
